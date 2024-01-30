@@ -2,7 +2,6 @@ package org.vaadin.example.main;
 
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -15,7 +14,6 @@ import org.vaadin.example.dto.Product;
 import org.vaadin.example.presenter.HomePagePresenter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Route(value = "home", layout = MainLayout.class)
 public class HomePage extends VerticalLayout {
@@ -83,11 +81,11 @@ public class HomePage extends VerticalLayout {
                     //name
 
                     Paragraph productName = new Paragraph(x.getName());
-                    productName.getStyle().set("font-size", "larger").set("font-weight", "600");
+                    productName.getStyle().set("font-size", "larger").set("font-weight", "700");
 
                     //pricing div
                     Div priceDiv = new Div();
-                    priceDiv.add(new Paragraph("Rs" + x.getPrice()));
+                    priceDiv.add(new Paragraph("₹" + String.format("%,f", x.getPrice())));
                     priceDiv.add(new Paragraph("Actual Price" + x.getPrice() + (x.getPrice() * x.getDiscount())));
                     priceDiv.add(new Paragraph(String.valueOf(x.getPrice())));
                     priceDiv.getStyle().set("display", "flex").set("justify-content", "space-around");
