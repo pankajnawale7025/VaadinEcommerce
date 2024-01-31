@@ -36,7 +36,7 @@ import org.vaadin.example.service.CustomerService;
  * The main view contains a text field for getting the user name and a button
  * that shows a greeting message in a notification.
  */
-@Route(value = "" ,layout = MainLayout.class)
+@Route(value = "login" ,layout = MainLayout.class)
 public class Login extends VerticalLayout {
     Binder<Customer> binder = new Binder<>(Customer.class);
     private TextField emailAddress = new TextField("Username");

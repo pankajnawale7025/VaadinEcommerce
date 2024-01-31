@@ -21,7 +21,7 @@ public class MainLayout extends AppLayout {
     private void createHeader() {
         H1 title = new H1("Cloudmart");
         title.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Margin.MEDIUM);
-
+        title.addClickListener(e -> navigateToHomepage());
 
         TextField textField = new TextField();
         textField.setPlaceholder("Search");
@@ -57,7 +57,12 @@ public class MainLayout extends AppLayout {
     }
 
     private void navigateToLoginPage() {
-        UI.getCurrent().navigate("loginpage");
+        UI.getCurrent().navigate("");
+    }
+
+
+    private void navigateToHomepage() {
+        UI.getCurrent().navigate("home");
     }
 
     private void navigateToregistrationPage() {
