@@ -14,8 +14,9 @@ import org.vaadin.example.dto.Product;
 import org.vaadin.example.presenter.HomePagePresenter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Route(value = "home", layout = MainLayout.class)
+@Route(value = "oldhome", layout = MainLayout.class)
 public class HomePage extends VerticalLayout {
 
 
@@ -95,7 +96,7 @@ public class HomePage extends VerticalLayout {
                     return productChildDiv;
                 }
 
-        ).toList();
+        ).collect(Collectors.toList());
 
 
         for (Div div : collect) {
