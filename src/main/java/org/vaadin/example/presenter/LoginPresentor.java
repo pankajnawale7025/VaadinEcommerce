@@ -3,6 +3,7 @@ package org.vaadin.example.presenter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.vaadin.example.dto.Customer;
 import org.vaadin.example.dto.Response;
 import org.vaadin.example.service.CustomerService;
 
@@ -18,5 +19,12 @@ public class LoginPresentor {
         Response response = (Response) object;
         return response;
     }
+
+
+    public Customer getCustomer(String emailAdress) {
+        Customer customer = customerService.getCustomer(emailAdress);
+        return customer;
+    }
+
 
 }

@@ -2,21 +2,26 @@ package org.vaadin.example.main;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.login.AbstractLogin;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.example.dto.Customer;
 import org.vaadin.example.dto.Response;
@@ -36,7 +41,8 @@ import org.vaadin.example.service.CustomerService;
  * The main view contains a text field for getting the user name and a button
  * that shows a greeting message in a notification.
  */
-@Route(value = "login" ,layout = MainLayout.class)
+@Slf4j
+@Route(value = "login", layout = MainLayout.class)
 public class Login extends VerticalLayout {
     Binder<Customer> binder = new Binder<>(Customer.class);
     private TextField emailAddress = new TextField("Username");
@@ -64,19 +70,7 @@ public class Login extends VerticalLayout {
 
 
         LoginForm loginForm = new LoginForm();
-        loginForm.addLoginListener(event -> {
-            String emailAddress = event.getUsername();
-            String pass = event.getPassword();
-            // Perform authentication logic here
-            Response response = loginPresentor.validateUSer(emailAddress, pass);
-            if (response.isSuccess()) {
-                Notification.show("Welcome " + response.getResponseData());
-                getUI().ifPresent(ui -> ui.navigate("home"));
-            } else {
-                // Show an error message
-                Notification.show("Authentication failed. Please check your credentials.");
-            }
-        });
+        loginForm.addLoginListener(this::onComponentEvent);
 
 
         Div div = new Div();
@@ -135,5 +129,35 @@ public class Login extends VerticalLayout {
         return div;
     }
 
+    private void onComponentEvent(AbstractLogin.LoginEvent event) {
+        String emailAddress = event.getUsername();
+        String pass = event.getPassword();
+        // Perform authentication logic here
+        Response response = loginPresentor.validateUSer(emailAddress, pass);
+        if (response.isSuccess()) {
 
+            VaadinSession vaadinSession = VaadinSession.getCurrent();
+            Customer customer = loginPresentor.getCustomer(emailAddress);
+
+            System.out.println(customer.getName());
+            log.info("customer is {}", customer.toString());
+
+            // Storing data in vaadn session
+            vaadinSession.setAttribute("name", customer.getName());
+            // navigating to home layout
+            getUI().ifPresent(ui -> ui.navigate("home"));
+
+
+
+
+        } else {
+            // Show an error message
+
+            Notification.show("Authentication failed. Please check your credentials.");
+
+
+            UI.getCurrent().getPage().reload();
+
+        }
+    }
 }

@@ -5,13 +5,20 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.dom.Style;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinSession;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.example.dto.Category;
+import org.vaadin.example.dto.Customer;
 import org.vaadin.example.dto.Product;
 import org.vaadin.example.presenter.HomePagePresenter;
 import org.vaadin.example.service.ProductService;
@@ -26,11 +33,31 @@ public class Home extends VerticalLayout {
 
     OrderedList productList = new OrderedList();
     HomePagePresenter homePagePresenter;
+    String customerName = null;
 
     @PostConstruct
     public void postConstruct() {
+
         getProductList();
-        add(new H1("Hello"), getCategoryDiv(), productList);
+
+        customerName = (String) VaadinSession.getCurrent().getAttribute("name");
+        log.info("Customer is {}", customerName);
+        Button reloadThePageButton = new Button("Reload the page ");
+        reloadThePageButton.addClickListener(e -> {
+            UI.getCurrent().getPage().reload();
+        });
+
+        Button nvbtn = new Button("Navigate button ");
+        nvbtn.addClickListener(e -> {
+            String url = "productdetails/" + "123";
+            UI.getCurrent().navigate(url);
+        });
+
+
+        productList.getStyle().setDisplay(Style.Display.FLEX).setFlexWrap(Style.FlexWrap.WRAP);
+
+
+        add(reloadThePageButton, nvbtn, getCategoryDiv(), productList);
     }
 
     ProductService productService;
@@ -65,13 +92,30 @@ public class Home extends VerticalLayout {
 
         //pricing div
         Div priceDiv = new Div();
-        priceDiv.add(new Paragraph("₹" + String.format("%,f", product.getPrice())));
-        priceDiv.add(new Paragraph("Actual Price" + product.getPrice() + (product.getPrice() * product.getDiscount())));
-        priceDiv.add(new Paragraph(String.valueOf(product.getPrice())));
+        Paragraph priceParagraph = new Paragraph("₹" + String.valueOf(product.getPrice()));
+        priceParagraph.getStyle().set("font-size", "large").set("font-weight", "700");
+
+        priceDiv.add(priceParagraph);
+
+        Paragraph originalPriceParagraph = new Paragraph("₹" + String.valueOf(product.getPrice() + (product.getPrice() * product.getDiscount())));
+        originalPriceParagraph.getStyle().set("font-size", "large").set("font-weight", "600");
+        originalPriceParagraph.addClassName("strikethrough-text");
+
+
+        priceDiv.add(originalPriceParagraph);
+
+        Paragraph discountparagraph = new Paragraph(String.valueOf(product.getDiscount()) + "%");
+        discountparagraph.getStyle().set("color", "green");
+
+        priceDiv.add(discountparagraph);
         priceDiv.getStyle().set("display", "flex").set("justify-content", "space-around");
         productChildDiv.add(imagediv);
         productChildDiv.add(productName);
         productChildDiv.add(priceDiv);
+        productChildDiv.addClickListener(e -> {
+            String url = "productdetails/" +String.valueOf( product.getId());
+            UI.getCurrent().navigate(url);
+        });
         return productChildDiv;
     }
 
@@ -107,7 +151,9 @@ public class Home extends VerticalLayout {
 
 
     public Component getCategoryDiv() {
-
+        if (customerName != null) {
+            Notification.show("Welcome " + customerName + "...");
+        }
         Div categoryParentDiv = new Div();
         categoryParentDiv.setWidthFull();
         categoryParentDiv.addClassName("category-parent-div");
@@ -125,5 +171,4 @@ public class Home extends VerticalLayout {
             }
         return categoryParentDiv;
     }
-
 }

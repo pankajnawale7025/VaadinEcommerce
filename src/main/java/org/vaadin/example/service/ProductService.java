@@ -57,4 +57,15 @@ public class ProductService {
     }
 
 
+    public Product getProduct(String productId) {
+
+        Product product;
+        Response<Product> response = restTemplate.getForObject("http://localhost:8081/Product/findProduct?productId=" + productId, Response.class);
+        ObjectMapper mapper = new ObjectMapper();
+        product = mapper.convertValue(response.getResponseData(), new TypeReference<Product>() {
+        });
+        return product;
+    }
+
+
 }

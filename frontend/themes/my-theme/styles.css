@@ -99,11 +99,16 @@ vaadin-text-field.input::part(input-field) {
 }
 .product-child-div
 {
+
+ width:350px;
+ height:200px;
       border:1px solid black;
       border-radius:10px;
       background-color:#fefaf5;
-          margin: 0px 25px;
-          padding: 20px;
+       margin: 25px 25px;
+        padding: 20px;
 }
 
-
+.strikethrough-text {
+    text-decoration: line-through;
+}
